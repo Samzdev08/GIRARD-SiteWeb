@@ -2,7 +2,7 @@
 
 # Journal de bord – Jour 1
 
-## 🎯 Objectif
+##  Objectif
 Afficher les offres d’emploi depuis une base de données avec le framework Slim.
 
 ##  Choses faites
@@ -21,4 +21,5 @@ Afficher les offres d’emploi depuis une base de données avec le framework Sli
 - Réorganisation en MVC
 - Harmonisation des noms de variables
 - Préparation d’une vue HTML pour le détail
+
 
