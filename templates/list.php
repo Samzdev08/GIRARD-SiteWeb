@@ -35,4 +35,12 @@
             <p class="message">Aucune annonce disponible pour le moment.</p>
         <?php endif; ?>
     </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
 </div>
+<script src="/js/list.js"></script>
