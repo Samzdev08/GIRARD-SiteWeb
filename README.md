@@ -13,14 +13,12 @@ Afficher les offres d’emploi depuis une base de données avec le framework Sli
 - Utilisation d’un layout commun avec navigation dynamique
 
 ##  Problèmes rencontrés
-- Mélange du HTML et du PHP
 - Incohérences dans les noms des champs
-- Route détail retournant du JSON
+- Route détail retournant pas du JSON
 
 ##  Solutions
 - Réorganisation en MVC
 - Harmonisation des noms de variables
-- Préparation d’une vue HTML pour le détail
 
 
 # Journal de bord – Jour 2
@@ -61,5 +59,6 @@ Avancer sur le backend de l’application en implémentant l’inscription, la c
 - Ajout de contrôles sur les champs du formulaire d’inscription et de connexion
 - Séparation plus stricte des responsabilités entre contrôleur et vue
 - Correction et optimisation des requêtes SQL pour récupérer les offres
+
 
 
