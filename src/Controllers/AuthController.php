@@ -78,7 +78,7 @@ class AuthController
             
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['login'];
-            $_SESSION['type_compte'] = $user['type_compte'];
+            $_SESSION['type_compte'] = $user['user_type'];
 
             return $response
                 ->withHeader('Location', '/')
@@ -140,5 +140,16 @@ class AuthController
                 'errors' => $errors
             ]);
         }
+    }
+
+
+    public function logoutt(Request $request, Response $response): Response
+    {
+        session_start();
+        session_destroy();
+
+        return $response
+            ->withHeader('Location', '/')
+            ->withStatus(302);
     }
 }

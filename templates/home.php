@@ -30,7 +30,7 @@
 </div>
 <div class="offres-container">
 
-    <h1>Offres récentes</h1>
+    <h1><?php echo $nombreOffre ?> offre(s) trouvée(s)</h1>
     <p>Découvrez les dernières offres d'emploi publiées sur notre plateforme.</p>
     <div class="offres-list">
 

@@ -35,7 +35,7 @@ class Annonce
     public static function findAllStage()
     {
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT * FROM " . self::$table );
+        $stmt = $db->prepare("SELECT * FROM " . self::$table);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -55,6 +55,94 @@ class Annonce
         }
         return $result;
     }
-    
 
+    public static function findAnnonceByUserId($id)
+    {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT * FROM " . self::$table . " WHERE user_id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            return null;
+        }
+        return $result;
+    }
+
+    public static function nombreStage()
+    {
+
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) FROM " . self::$table);
+        $stmt->execute();
+        $total = $stmt->fetchColumn();
+
+        return $total;
+    }
+
+    public static function verifMedia($file)
+    {
+
+        if ($file['size'] == 0 || $file['size'] > 1000000) return ['success' => false, 'message' => 'Taille de fichier trop grand max '];
+
+        if (!isset($file) || (empty($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK)) {
+            return ['success' => false, 'message' => 'Aucun fichier valide reçu.'];
+        }
+
+
+        $uploadDir = __DIR__ . '/../../public/uploads/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
+
+        $finalName = time() . '_' . $file['name'];
+        $destination = $uploadDir . $finalName;
+
+        $allowed = ['pdf'];
+
+        $extension = strtolower(pathinfo($finalName, PATHINFO_EXTENSION));
+
+        if (!in_array($extension, $allowed)) {
+
+            return ['success' => false, 'message' => 'Mauvaise extension de fichier.'];
+        }
+
+        if (!move_uploaded_file($file['tmp_name'], $destination)) {
+            return ['success' => false, 'message' => 'Échec du déplacement du fichier.'];
+        }
+
+        return ['success' => true, 'filename' => $finalName, 'type' => $extension];
+    }
+
+    public static function updateAnnonce($data){
+        $db = Database::getInstance()->getConnection();
+
+        $sql = "
+        UPDATE ads
+        SET 
+            title = :title,
+            description = :description,
+            required_skills = :required_skills,
+            media_path = :media_path,
+            media_type = :media_type,
+            start_date = :date_debut,
+            end_date = :date_fin,
+            updated_at = NOW()
+        WHERE id = :id
+        ";
+        
+        $stmt = $db->prepare($sql);
+
+        $stmt->execute([
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'required_skills' => $data['required_skills'],
+            'media_path' => $data['media_path'],
+            'media_type' => $data['media_type'],
+            'date_debut' => $data['start_date'],
+            'date_fin' => $data['end_date'],
+            'id' => $data['id']
+        ]);
+
+        return true;
+    }
 }
