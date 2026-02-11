@@ -33,32 +33,29 @@ Avancer sur le backend de l’application en implémentant l’inscription, la c
 
 - Ajustement du planning prévisionnel
 - Ajustement de la liste des tâches en fonction de l’avancement
-- Mise en place du backend de la page d’inscription
-- Mise en place du backend de la page de connexion
-- Gestion de l’authentification des utilisateurs
+- Uilisation du modèle `User` pour insérer les utilisateurs et vérifier si leur login correspond
+- Utilisation du contrôleur `AuthController`
+- Mise en place des routes d'auth (`/auth/login`, `/auth/register`, `/logout`)
+- Mise en place du backend de la route `/auth/register`  ( la page d’inscriptionn )
+- Mise en place du backend de la route `/auth/login`  ( la page de connexion )
 - Mise en place des sessions utilisateur
-- Création de la logique backend pour la page de liste des offres
-- Récupération des annonces depuis la base de données
+- Création de la logique backend pour la route `/offres`  ( la page de liste des annonces )
 - Affichage dynamique de la liste des offres dans la vue
-- Liaison correcte entre routes, contrôleurs et modèles
+
 
 ---
 
 ### Problèmes rencontrés
 
-- Difficulté à gérer correctement les sessions utilisateur
 - Problèmes lors de la validation des données du formulaire d’inscription
-- Confusion entre utilisateurs connectés et non connectés
-- Requêtes SQL initialement incomplètes pour la liste des offres
 
 ---
 
 ### Solutions
 
-- Mise en place d’une logique claire pour la gestion des sessions
 - Ajout de contrôles sur les champs du formulaire d’inscription et de connexion
-- Séparation plus stricte des responsabilités entre contrôleur et vue
-- Correction et optimisation des requêtes SQL pour récupérer les offres
+
+
 
 
 
