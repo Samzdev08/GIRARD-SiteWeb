@@ -17,7 +17,6 @@ Afficher les offres d’emploi depuis une base de données avec le framework Sli
 - Route détail retournant pas du JSON
 
 ##  Solutions
-- Réorganisation en MVC
 - Harmonisation des noms de variables
 
 
@@ -54,6 +53,7 @@ Avancer sur le backend de l’application en implémentant l’inscription, la c
 ### Solutions
 
 - Ajout de contrôles sur les champs du formulaire d’inscription et de connexion
+
 
 
 
