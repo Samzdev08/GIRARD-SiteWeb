@@ -76,7 +76,7 @@ Développer l'espace annonceur avec la gestion complète des annonces (affichage
 * Développement du fichier JavaScript `annonceur.js` pour gérer :
   * L'affichage des détails d'une annonce dans une modale
   * L'affichage du formulaire de modification dans une modale
-  * Les appels AJAX vers `/details/{id}` pour récupérer les données en JSON
+  * Les appels fetch vers `/details/{id}` pour récupérer les données en JSON
 * Création du système de modale pour afficher et modifier les annonces sans rechargement de page
 * Gestion du filtrage et de la sanitisation des données du formulaire de modification
 
@@ -90,6 +90,7 @@ Développer l'espace annonceur avec la gestion complète des annonces (affichage
 * Création d'une fonction `verifMedia()` centralisée pour la validation des fichiers
 * Affichage conditionnel du lien vers le média actuel si présent, sinon message "Aucun média"
 * Utilisation d'événements JavaScript pour gérer l'ouverture/fermeture des modales
+
 
 
 
