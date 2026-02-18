@@ -87,11 +87,45 @@ Développer l'espace annonceur avec la gestion complète des annonces (affichage
 
 ## Solutions
 * Ajout de contrôles stricts sur la taille (max 1 Mo) et l'extension (uniquement PDF) des fichiers uploadés
-* Création d'une fonction `verifMedia()` centralisée pour la validation des fichiers
+* Création d'une fonction `verifMedia()` pour la validation des fichiers
 * Affichage conditionnel du lien vers le média actuel si présent, sinon message "Aucun média"
 * Utilisation d'événements JavaScript pour gérer l'ouverture/fermeture des modales
 
 
 
+
+## Journal de bord – Jour 4
+
+### Objectif
+
+Finaliser le CRUD des annonces, corriger les erreurs rencontrées lors de la modification, mettre en place la page administrateur et implémenter la recherche d’annonces et ajustement du planning entier.
+
+---
+
+### Choses faites
+
+- Finalisation complète du CRUD des annonces (création, modification, suppression et affichage)
+- Correction de la méthode `updateAnnonce` pour assurer la bonne mise à jour des données en base
+- Amélioration de la gestion des messages utilisateur (succès et erreur) lors des opérations
+- Correction du mapping entre les champs du formulaire (`date_debut`, `date_fin`) et la base de données (`start_date`, `end_date`)
+- Ajuster le planning pour qu'il corresponde à mon avancement
+---
+
+### Problèmes rencontrés
+
+- Erreur SQL (`Integrity constraint violation`) due à un champ `start_date` envoyé `NULL` lors de la modification d’une annonce
+- Incohérence entre les noms des champs du formulaire et ceux attendus par la base de données
+- Temps de développement plus long que prévu pour stabiliser le CRUD
+
+---
+
+### Solutions
+
+- Correction du mapping des dates pour garantir l’envoi de valeurs valides à la base
+---
+
+### Bilan
+
+Le CRUD d’une annonce est désormais entièrement fonctionnel, mais sa mise en place a demandé plus de temps que prévu en raison des ajustements nécessaires et des corrections d’erreurs ce qui fait que je n'ai pu faire la page admin et implémenter la recherche d'annonce
 
 
