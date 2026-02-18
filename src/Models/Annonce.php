@@ -84,11 +84,8 @@ class Annonce
     public static function verifMedia($file)
     {
 
-        if ($file['size'] == 0 || $file['size'] > 1000000) return ['success' => false, 'message' => 'Taille de fichier trop grand max '];
+        if ($file['size'] == 0 ||$file['size'] > 1000000) return ['success' => false, 'message' => 'Taille de fichier trop grand max '];
 
-        if (!isset($file) || (empty($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK)) {
-            return ['success' => false, 'message' => 'Aucun fichier valide reçu.'];
-        }
 
 
         $uploadDir = __DIR__ . '/../../public/uploads/';
@@ -138,9 +135,45 @@ class Annonce
             'required_skills' => $data['required_skills'],
             'media_path' => $data['media_path'],
             'media_type' => $data['media_type'],
-            'date_debut' => $data['start_date'],
-            'date_fin' => $data['end_date'],
+            'date_debut' => $data['date_debut'],
+            'date_fin' => $data['date_fin'],
             'id' => $data['id']
+        ]);
+
+        return true;
+    }
+
+    public static function deleteAnnonce($id){
+        $db = Database::getInstance()->getConnection();
+
+        $sql = "DELETE FROM ads WHERE id = :id";
+        
+        $stmt = $db->prepare($sql);
+
+        $stmt->execute(['id' => $id]);
+
+        return true;
+    } 
+    
+    public static function createAnnonce($data){
+        $db = Database::getInstance()->getConnection();
+
+        $sql = "
+        INSERT INTO ads (user_id, title, description, required_skills, media_path, media_type, start_date, end_date, created_at)
+        VALUES (:user_id, :title, :description, :required_skills, :media_path, :media_type, :date_debut, :date_fin, NOW())
+        ";
+        
+        $stmt = $db->prepare($sql);
+
+        $stmt->execute([
+            'user_id' => $data['user_id'],
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'required_skills' => $data['required_skills'],
+            'media_path' => $data['media_path'],
+            'media_type' => $data['media_type'],
+            'date_debut' => $data['date_debut'],
+            'date_fin' => $data['date_fin']
         ]);
 
         return true;

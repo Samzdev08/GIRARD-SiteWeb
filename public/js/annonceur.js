@@ -63,7 +63,7 @@ function showEditModal(stage) {
         mediaHtml = `<p>Aucun média pour cette annonce</p>`;
     } else {
         mediaHtml = `
-            <a href="/media/${stage.media_path}" target="_blank">
+            <a href="/uploads/${stage.media_path}" target="_blank">
                 Voir le média actuel
             </a>
         `;
@@ -77,28 +77,28 @@ function showEditModal(stage) {
 
             <div>
                 <label for="title">Titre :</label>
-                <input type="text" id="title" name="title" value="${stage.title}" required>
+                <input type="text" id="title" name="title" value="${stage.title}" >
             </div>
 
             <div>
                 <label for="description">Description :</label>
-                <textarea id="description" name="description" required>${stage.description}</textarea>
+                <textarea id="description" name="description" >${stage.description}</textarea>
             </div>
 
             <div>
-                <label for="required_skills">Compétences requises :</label>
+                <label for="required_skills">Compétences requises (séparées par des virgules) :</label>
                 <input type="text" id="required_skills" name="required_skills" value="${stage.required_skills}">
             </div>
 
             <div>
                 <label for="date_debut">Date de début :</label>
-                <input type="date" id="date_debut" name="date_debut" value="${stage.start_date}" required>
+                <input type="date" id="date_debut" name="date_debut" value="${stage.start_date}" >
             </div>
 
             <div>
                     <label for="date_fin">Date de fin :</label>
-                    <input type="date" id="date_fin" name="date_fin" value="${stage.end_date}" required>
-            </div>
+                    <input type="date" id="date_fin" name="date_fin" value="${stage.end_date}" §>
+            </div
 
             <div>
                 <label for="media">Média :</label>
@@ -144,3 +144,44 @@ window.onclick = function (event) {
         modal.style.display = 'none';
     }
 };
+
+document.querySelector('.add-annonce').addEventListener('click', function (e) { 
+    e.preventDefault();
+    const modal = document.getElementById('modal');
+    const body = document.getElementById('modalBody');
+
+    body.innerHTML = `
+        <form id="createStageForm" action="/annonceur/create" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="title">Titre :</label>
+                <input type="text" id="title" name="title" >
+            </div>
+            <div>
+                <label for="description">Description :</label>
+                <textarea id="description" name="description" ></textarea>
+            </div>
+            <div>
+                <label for="required_skills">Compétences requises (séparées par des virgules) :</label>
+                <input type="text" id="required_skills" name="required_skills" >
+            </div>
+            <div>
+                <label for="date_debut">Date de début :</label>
+                <input type="date" id="date_debut" name="date_debut" >
+            </div>
+            <div>
+                <label for="date_fin">Date de fin :</label>
+                <input type="date" id="date_fin" name="date_fin" >
+            </div>
+            <div>
+                <label for="media">Média (PDF) * :</label>
+                <input type="file" id="media" name="media" accept="application/pdf" >
+            </div>
+            <div style="margin-top: 15px;">
+                <button type="submit">Créer</button>
+                <button type="button" onclick="closeModal()">Annuler</button>
+            </div>
+        </form>
+    `;
+    modal.style.display = 'block';
+});
+

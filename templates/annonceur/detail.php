@@ -1,3 +1,4 @@
+
 <div class="annonceur-detail">
     <div class="annonceur-header">
         <div class="annonceur-text">
@@ -5,10 +6,13 @@
             <p>Gérez vos offres d'emploi publiées</p>
         </div>
         <div class="annonceur-add">
-            <a href="/annonceur/create">Nouvelle annonce</a>
+            <a href="#" class="add-annonce">Nouvelle annonce</a>
         </div>
     </div>
-    <div class="annonces-message"><?= $message ?></div>
+    <?php if (!empty($message)): ?>
+        <div class="message <?= $type ?>"><?= $message ?></div>
+    <?php endif; ?>
+
     <div class="annonceur-list">
 
         <?php if (!empty($annonces)): ?>
@@ -34,9 +38,9 @@
 
                     </div>
                     <div class="annonceur-actions">
-                        <a class="detail" href="/annonceur/details/1">Voir</a>
-                        <a class="edit" href="/annonceur/edit/1">Modifier</a>
-                        <form action="/annonceur/delete/1" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?');">
+                        <a class="detail" href="/annonceur/details/<?= $annonce['id'] ?>">Voir</a>
+                        <a class="edit" href="/annonceur/edit/<?= $annonce['id'] ?>">Modifier</a>
+                        <form action="/annonceur/delete/<?= $annonce['id'] ?>" method="POST">
                             <button type="submit">Supprimer</button>
                         </form>
                     </div>

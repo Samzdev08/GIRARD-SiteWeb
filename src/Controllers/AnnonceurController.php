@@ -70,10 +70,8 @@ class AnnonceurController
         ]);
     }
 
-    public function updateAnnonce(Request $request, Response $response): Response
+    public function updateAnnonce(Request $request, Response $response)
     {
-
-
         $data = filter_input_array(INPUT_POST, [
             'id' => FILTER_SANITIZE_NUMBER_INT,
             'title' => FILTER_SANITIZE_SPECIAL_CHARS,
@@ -82,50 +80,203 @@ class AnnonceurController
             'date_debut' => FILTER_SANITIZE_SPECIAL_CHARS,
             'date_fin' => FILTER_SANITIZE_SPECIAL_CHARS,
         ]);
+        $media = null;
 
-        $media = Annonce::verifMedia($_FILES['media']);
+        if (!empty($_FILES['media']['name'])) {
+            $media = Annonce::verifMedia($_FILES['media']);
 
+            if (!$media['success']) {
 
-        if (!$media['success']) {
+                $userId = $_SESSION['user_id'];
+                $annonces = Annonce::findAnnonceByUserId($userId);
 
-            $view = new PhpRenderer(__DIR__ . '/../../templates');
-            $view->setLayout('layout.php');
+                $view = new PhpRenderer(__DIR__ . '/../../templates');
+                $view->setLayout('layout.php');
 
-            return $view->render($response, 'annonceur/detail.php', [
-                'title' => 'Dashboard Annonceur',
-                'message' => $media['message']
-            ]);
-        }
-
-        if ($media['filename'] !== null) {
+                return $view->render($response, 'annonceur/detail.php', [
+                    'title' => 'Dashboard Annonceur',
+                    'message' => $media['message'],
+                    'type' => 'error',
+                    'annonces' => $annonces
+                ]);
+            }
 
             $data['media_path'] = $media['filename'];
             $data['media_type'] = $media['type'];
         }
 
+        if (empty($data['title']) || empty($data['description']) || empty($data['required_skills']) || empty($data['date_debut']) || empty($data['date_fin'])) {
+            $userId = $_SESSION['user_id'];
+            $annonces = Annonce::findAnnonceByUserId($userId);
+
+            $view = new PhpRenderer(__DIR__ . '/../../templates');
+            $view->setLayout('layout.php');
+
+            return $view->render($response, 'annonceur/detail.php', [
+                'title' => 'Dashboard Annonceur',
+                'message' => 'Les champs ne peuvent pas etre vides.',
+                'type' => 'error',
+                'annonces' => $annonces
+            ]);
+        }
+        if (strtotime($data['date_fin']) < strtotime($data['date_debut'])) {
+            $userId = $_SESSION['user_id'];
+            $annonces = Annonce::findAnnonceByUserId($userId);
+
+            $view = new PhpRenderer(__DIR__ . '/../../templates');
+            $view->setLayout('layout.php');
+
+            return $view->render($response, 'annonceur/detail.php', [
+                'title' => 'Dashboard Annonceur',
+                'message' => 'La date de fin doit être supérieure à la date de début.',
+                'type' => 'error',
+                'annonces' => $annonces
+            ]);
+        }
+
+        if(!preg_match($data['title'], '/^[a-zA-Z0-9\s]+$/')) {
+            $userId = $_SESSION['user_id'];
+            $annonces = Annonce::findAnnonceByUserId($userId);
+
+            $view = new PhpRenderer(__DIR__ . '/../../templates');
+            $view->setLayout('layout.php');
+
+            return $view->render($response, 'annonceur/detail.php', [
+                'title' => 'Dashboard Annonceur',
+                'message' => 'Le titre de l\'annonce est invalide.',
+                'type' => 'error',
+                'annonces' => $annonces
+            ]);
+        }
+
 
         $result = Annonce::updateAnnonce($data);
-        if ($result == true) {
 
-            $view = new PhpRenderer(__DIR__ . '/../../templates');
-            $view->setLayout('layout.php');
+        $userId = $_SESSION['user_id'];
+        $annonces = Annonce::findAnnonceByUserId($userId);
 
-            return $view->render($response, 'annonceur/detail.php', [
-                'title' => 'Dashboard Annonceur',
-                'message' => 'Annonce modifiée avec succès.'
-            ]);
+        $view = new PhpRenderer(__DIR__ . '/../../templates');
+        $view->setLayout('layout.php');
 
-        } else {
-            
-            $view = new PhpRenderer(__DIR__ . '/../../templates');
-            $view->setLayout('layout.php');
+        return $view->render($response, 'annonceur/detail.php', [
+            'title' => 'Dashboard Annonceur',
+            'message' => $result ? 'Annonce modifiée avec succès.' : 'Erreur lors de la mise à jour.',
+            'type' => $result ? 'success' : 'error',
+            'annonces' => $annonces
+        ]);
+    }
+    public function deleteAnnonce(Request $request, Response $response, array $args): Response
+    {
+        $id = $args['id'];
+        $result = Annonce::deleteAnnonce($id);
 
-            return $view->render($response, 'annonceur/detail.php', [
-                'title' => 'Dashboard Annonceur',
-                'message' => 'Erreur lors de la mise à jour de l\'annonce.'
-            ]);
+        $userId = $_SESSION['user_id'];
+        $annonces = Annonce::findAnnonceByUserId($userId);
 
+        $view = new PhpRenderer(__DIR__ . '/../../templates');
+        $view->setLayout('layout.php');
+
+        return $view->render($response, 'annonceur/detail.php', [
+            'title' => 'Dashboard Annonceur',
+            'message' => $result ? 'Annonce supprimée avec succès.' : 'Erreur lors de la suppression.',
+            'type' => $result ? 'success' : 'error',
+            'annonces' => $annonces
+        ]);
+    }
+
+    public function createAnnonce(Request $request, Response $response)
+    {
+       $data = filter_input_array(INPUT_POST, [
+            'title' => FILTER_SANITIZE_SPECIAL_CHARS,
+            'description' => FILTER_SANITIZE_SPECIAL_CHARS,
+            'required_skills' => FILTER_SANITIZE_SPECIAL_CHARS,
+            'date_debut' => FILTER_SANITIZE_SPECIAL_CHARS,
+            'date_fin' => FILTER_SANITIZE_SPECIAL_CHARS,
+        ]);
+
+        $media = null;
+
+        if (!empty($_FILES['media']['name'])) {
+            $media = Annonce::verifMedia($_FILES['media']);
+
+            if (!$media['success']) {
+               
+                    $userId = $_SESSION['user_id'];
+                    $annonces = Annonce::findAnnonceByUserId($userId);
+    
+                    $view = new PhpRenderer(__DIR__ . '/../../templates');
+                    $view->setLayout('layout.php');
+    
+                    return $view->render($response, 'annonceur/detail.php', [
+                        'title' => 'Dashboard Annonceur',
+                        'message' => $media['message'],
+                        'type' => 'error',
+                        'annonces' => $annonces
+                    ]);
+            }
+
+            $data['media_path'] = $media['filename'];
+            $data['media_type'] = $media['type'];
         }
+
+            if (empty($data['title']) || empty($data['description']) || empty($data['required_skills']) || empty($data['date_debut']) || empty($data['date_fin'])) {
+                $userId = $_SESSION['user_id'];
+                $annonces = Annonce::findAnnonceByUserId($userId);
+    
+                $view = new PhpRenderer(__DIR__ . '/../../templates');
+                $view->setLayout('layout.php');
+    
+                return $view->render($response, 'annonceur/detail.php', [
+                    'title' => 'Dashboard Annonceur',
+                    'message' => 'Les champs ne peuvent pas etre vides.',
+                    'type' => 'error',
+                    'annonces' => $annonces
+                ]);
+            }
+
+            if (strtotime($data['date_fin']) < strtotime($data['date_debut'])) {
+                $userId = $_SESSION['user_id'];
+                $annonces = Annonce::findAnnonceByUserId($userId);
+    
+                $view = new PhpRenderer(__DIR__ . '/../../templates');
+                $view->setLayout('layout.php');
+    
+                return $view->render($response, 'annonceur/detail.php', [
+                    'title' => 'Dashboard Annonceur',
+                    'message' => 'La date de fin doit être supérieure à la date de début.',
+                    'type' => 'error',
+                    'annonces' => $annonces
+                ]);
+            }
+
+             if(!preg_match($data['title'], '/^[a-zA-Z0-9\s]+$/')) {
+                $userId = $_SESSION['user_id'];
+                $annonces = Annonce::findAnnonceByUserId($userId);
+    
+                $view = new PhpRenderer(__DIR__ . '/../../templates');
+                $view->setLayout('layout.php');
+    
+                return $view->render($response, 'annonceur/detail.php', [
+                    'title' => 'Dashboard Annonceur',
+                    'message' => 'Le titre de l\'annonce est invalide.',
+                    'type' => 'error',
+                    'annonces' => $annonces
+                ]);
+            }
+
+        $result = Annonce::createAnnonce($data);
+
+        $userId = $_SESSION['user_id'];
+        $annonces = Annonce::findAnnonceByUserId($userId);
+
+        $view = new PhpRenderer(__DIR__ . '/../../templates');
+        $view->setLayout('layout.php');
+
+        return $view->render($response, 'annonceur/detail.php', [
+            'title' => 'Dashboard Annonceur',
+            'message' => $result ? 'Annonce créée avec succès.' : 'Erreur lors de la création.',
+            'type' => $result ? 'success' : 'error',
+            'annonces' => $annonces
+        ]);
     }
 }
-        

@@ -34,6 +34,5 @@ $app->group('chercheur', function ($group) {
     $group->get('/profile', ChercheurController::class . ':showProfile');
     $group->post('/profile', ChercheurController::class . ':updateProfile');
     $group->get('/offres', ChercheurController::class . ':listOffres');
-    $group->post('/offres/{id}/apply', ChercheurController::class . ':applyOffre');
 });
 
