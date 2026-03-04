@@ -5,7 +5,7 @@
     <p>Des milliers d'annonces vous attendent sur notre plateforme.</p>
     <div class="search-container">
         <form action="/search" method="GET">
-            <input type="text" name="query" placeholder="Rechercher un job, une compétence, un mot-clé..." required>
+            <input type="text" class="search-bar" name="query" placeholder="Rechercher un job, une compétence, un mot-clé..." required>
             <button type="submit">Rechercher</button>
         </form>
     </div>
@@ -60,15 +60,16 @@
     <div class="voir-plus">
         <a href="/offres">Voir plus d'offres</a>
     </div>
-    <?php else: ?>
-        <p class="message">Aucune annonce disponible pour le moment.</p>
-    <?php endif; ?>
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <div id="modalBody"></div>
-        </div>
+<?php else: ?>
+    <p class="message">Aucune annonce disponible pour le moment.</p>
+<?php endif; ?>
+    <p class="message-search">Aucune annonce corrospondante pour ce mot-clé. Essayé un autre</p>
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div id="modalBody"></div>
     </div>
+</div>
 
 </div>
 <script src="/js/home.js"></script>

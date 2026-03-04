@@ -84,7 +84,7 @@ class Annonce
     public static function verifMedia($file)
     {
 
-        if ($file['size'] == 0 ||$file['size'] > 1000000) return ['success' => false, 'message' => 'Taille de fichier trop grand max '];
+        if ($file['size'] == 0 || $file['size'] > 1000000) return ['success' => false, 'message' => 'Taille de fichier trop grand max '];
 
 
 
@@ -110,7 +110,8 @@ class Annonce
         return ['success' => true, 'filename' => $finalName, 'type' => $extension];
     }
 
-    public static function updateAnnonce($data){
+    public static function updateAnnonce($data)
+    {
         $db = Database::getInstance()->getConnection();
 
         $sql = "
@@ -126,7 +127,7 @@ class Annonce
             updated_at = NOW()
         WHERE id = :id
         ";
-        
+
         $stmt = $db->prepare($sql);
 
         $stmt->execute([
@@ -143,26 +144,28 @@ class Annonce
         return true;
     }
 
-    public static function deleteAnnonce($id){
+    public static function deleteAnnonce($id)
+    {
         $db = Database::getInstance()->getConnection();
 
         $sql = "DELETE FROM ads WHERE id = :id";
-        
+
         $stmt = $db->prepare($sql);
 
         $stmt->execute(['id' => $id]);
 
         return true;
-    } 
-    
-    public static function createAnnonce($data){
+    }
+
+    public static function createAnnonce($data)
+    {
         $db = Database::getInstance()->getConnection();
 
         $sql = "
         INSERT INTO ads (user_id, title, description, required_skills, media_path, media_type, start_date, end_date, created_at)
         VALUES (:user_id, :title, :description, :required_skills, :media_path, :media_type, :date_debut, :date_fin, NOW())
         ";
-        
+
         $stmt = $db->prepare($sql);
 
         $stmt->execute([
@@ -177,5 +180,20 @@ class Annonce
         ]);
 
         return true;
+    }
+
+    public static function searchAnnonceByParams($params)
+    {
+
+        $db = Database::getInstance()->getConnection();
+
+        $sql = "SELECT *, COUNT(*) OVER() as total_count
+        FROM ads
+        WHERE required_skills LIKE :keyword";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['keyword' => '%' . $params . '%']);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

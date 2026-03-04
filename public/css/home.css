@@ -1,0 +1,7 @@
+.message-search {
+    display: none;
+}
+
+.active-message {
+    display: block !important;
+}

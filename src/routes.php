@@ -11,6 +11,8 @@ use App\Controllers\ChercheurController;
 $app->get('/', AnnonceurController::class);
 $app->get('/details/{id}', AnnonceurController::class . ':detailsAnnonce');
 $app->get('/offres', AnnonceurController::class . ':offres');
+$app->get('/search/{params}', AnnonceurController::class . ':search');
+
 
 $app->group('/auth', function ($group) {
     $group->get('/login', AuthController::class . ':showLoginForm');

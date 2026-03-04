@@ -279,4 +279,15 @@ class AnnonceurController
             'annonces' => $annonces
         ]);
     }
+
+    public function search(Request $request, Response $response, array $args): Response
+    {
+        $params = $args['params'];
+        $result = Annonce::searchAnnonceByParams($params);
+
+        $response->getBody()->write(json_encode(['data' => $result]));
+        return $response->withHeader('Content-Type', 'application/json; charset=utf-8');
+
+        
+    }
 }
