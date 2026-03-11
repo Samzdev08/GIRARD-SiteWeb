@@ -1,131 +1,194 @@
-﻿# GIRARD-SiteWeb
+# Journal de bord 
+### lien du rapport de test : https://docs.google.com/spreadsheets/d/1xJxyJq9bZRFFxvoRA4Ii3Y5YiuEe80j6oIEHq0L34M0/edit?gid=36809425#gid=36809425
 
-# Journal de bord – Jour 1
-
-##  Objectif
-Afficher les offres d’emploi depuis une base de données avec le framework Slim.
-
-##  Choses faites
-- Mise en place des routes principales (`/`, `/offres`, `/details/{id}`)
-- Création du modèle `Annonce` pour récupérer les annonces
-- Création du contrôleur `AnnonceurController`
-- Affichage des offres et des compétences dans les vues
-- Utilisation d’un layout commun avec navigation dynamique
-
-##  Problèmes rencontrés
-- Incohérences dans les noms des champs
-- Route détail retournant pas du JSON
-
-##  Solutions
-- Harmonisation des noms de variables
-
-
-# Journal de bord – Jour 2
-
-### Objectif
-
-Avancer sur le backend de l’application en implémentant l’inscription, la connexion des utilisateurs et la page de liste des offres, tout en respectant le planning prévu.
-
+### lien du planing : https://docs.google.com/spreadsheets/d/1pgZ-EXmahRv91h59EzFW84b1TBxVgkHT/edit?gid=2145585959#gid=2145585959
 ---
 
-### Choses faites
-
-- Ajustement du planning prévisionnel
-- Ajustement de la liste des tâches en fonction de l’avancement
-- Uilisation du modèle `User` pour insérer les utilisateurs et vérifier si leur login correspond
-- Utilisation du contrôleur `AuthController`
-- Mise en place des routes d'auth (`/auth/login`, `/auth/register`, `/logout`)
-- Mise en place du backend de la route `/auth/register`  ( la page d’inscriptionn )
-- Mise en place du backend de la route `/auth/login`  ( la page de connexion )
-- Mise en place des sessions utilisateur
-- Création de la logique backend pour la route `/offres`  ( la page de liste des annonces )
-- Affichage dynamique de la liste des offres dans la vue
+## Jour 1 – Mercredi 28 janvier 2026
 
 
----
+**Objectif du jour :** Mettre en place la structure du projet et afficher les annonces depuis la base de données
+
+### Ce que j'ai fait
+- Créer la structure du projet avec Slim 
+- Configurer la connexion à la base de données avec PDO
+- Définir les routes principales : `/`, `/offres`, `/details/{id}`
+- Créer le modèle `Annonce` avec la méthode `findAll()` pour récupérer les annonces depuis la table `ads`
+- Créer le contrôleur `AnnonceurController` avec la méthode `index()`
+- Créer les vues pour l'accueil, la liste des offres et le détail d'une annonce
+- Mettre en place un layout commun avec une navigation qui s'adapte selon la page
+- Écrire le journal de bord
 
 ### Problèmes rencontrés
+- Les noms des champs dans le modèle ne correspondaient pas à ceux de la base de données (ex: `start_date` / `end_date`)
+- La route `/details/{id}` renvoyait du HTML au lieu du JSON attendu par le JavaScript
 
-- Problèmes lors de la validation des données du formulaire d’inscription
+### Ce que j'ai fait pour résoudre
+- Corriger les noms de variables dans le modèle, le contrôleur et la vue pour qu'ils correspondent aux colonnes de la table `ads`
+- Ajouter le header `Content-Type: application/json` sur la route détail
 
----
-
-### Solutions
-
-- Ajout de contrôles sur les champs du formulaire d’inscription et de connexion
-
-
-# Journal de bord – Jour 3
-
-## Objectif
-Développer l'espace annonceur avec la gestion complète des annonces (affichage, modification, suppression) et mettre en place l'interaction frontend/backend via JavaScript.
-
-## Choses faites
-* Création de la page **dashboard annonceur** (`/annonceur/dashboard`)
-* Mise en place de la méthode `findAnnonceByUserId()` dans le modèle `Annonce` pour récupérer les annonces d'un utilisateur spécifique
-* Ajout de la méthode `nombreStage()` pour compter le nombre total d'annonces
-* Implémentation de la méthode `verifMedia()` pour valider et uploader des fichiers PDF (limite de 1 Mo)
-* Création de la méthode `updateAnnonce()` dans le modèle pour mettre à jour une annonce en base de données
-* Développement du contrôleur `AnnonceurController` avec les méthodes :
-  * `dashboard()` : affichage de toutes les annonces de l'utilisateur connecté
-  * `updateAnnonce()` : traitement du formulaire de modification avec upload de média
-* Création de la vue `annonceur/detail.php` affichant la liste des annonces avec leur statut (Active/Expirée)
-* Mise en place des routes du groupe `/annonceur` :
-  * `/dashboard`, `/details/{id}`, `/create`, `/edit/{id}`, `/delete/{id}`
-* Mise en place des routes du groupe `/chercheur` (structure préparée)
-* Développement du fichier JavaScript `annonceur.js` pour gérer :
-  * L'affichage des détails d'une annonce dans une modale
-  * L'affichage du formulaire de modification dans une modale
-  * Les appels fetch vers `/details/{id}` pour récupérer les données en JSON
-* Création du système de modale pour afficher et modifier les annonces sans rechargement de page
-* Gestion du filtrage et de la sanitisation des données du formulaire de modification
-
-## Problèmes rencontrés
-* Gestion de l'upload de fichiers PDF avec vérification de taille et d'extension
-* Affichage dynamique du média existant dans le formulaire de modification
-* Fermeture de la modale après soumission du formulaire
-
-## Solutions
-* Ajout de contrôles stricts sur la taille (max 1 Mo) et l'extension (uniquement PDF) des fichiers uploadés
-* Création d'une fonction `verifMedia()` pour la validation des fichiers
-* Affichage conditionnel du lien vers le média actuel si présent, sinon message "Aucun média"
-* Utilisation d'événements JavaScript pour gérer l'ouverture/fermeture des modales
-
-
-
-
-## Journal de bord – Jour 4
-
-### Objectif
-
-Finaliser le CRUD des annonces, corriger les erreurs rencontrées lors de la modification, mettre en place la page administrateur et implémenter la recherche d’annonces et ajustement du planning entier.
+### Tâches prévues pour la prochaine séance
+- Créer la page de connexion et d'inscription 
+- Implémenter l'inscription et la connexion côté backend 
 
 ---
 
-### Choses faites
+## Jour 2 – Mercredi 4 février 2026
 
-- Finalisation complète du CRUD des annonces (création, modification, suppression et affichage)
-- Correction de la méthode `updateAnnonce` pour assurer la bonne mise à jour des données en base
-- Amélioration de la gestion des messages utilisateur (succès et erreur) lors des opérations
-- Correction du mapping entre les champs du formulaire (`date_debut`, `date_fin`) et la base de données (`start_date`, `end_date`)
-- Ajuster le planning pour qu'il corresponde à mon avancement
----
+ 
+**Objectif du jour :** Implémenter l'inscription et la connexion des utilisateurs
+
+### Ce que j'ai fait
+- Mettre à jour le planning selon l'avancement réel du jour 1
+- Créer le modèle `User` avec les méthodes `insert()` et `findByLogin()` pour interagir avec la table `users`
+- Créer le contrôleur `AuthController` avec les méthodes `register()` et `login()`
+- Définir les routes : `/auth/login`, `/auth/register`, `/logout`
+- Développer le backend de l'inscription : validation des champs, hashage du mot de passe avec `password_hash()`, insertion dans `users`
+- Développer le backend de la connexion : vérification du mot de passe avec `password_verify()`, démarrage de la session
+- Mettre en place la gestion des sessions (démarrage, stockage de l'utilisateur, destruction à la déconnexion)
+- Développer la route `/offres` : récupérer les annonces depuis `ads` et les passer à la vue
+- Afficher la liste des offres dynamiquement dans la vue
+- Écrire le journal de bord
 
 ### Problèmes rencontrés
+- Le formulaire d'inscription acceptait des champs vides ou un email mal formaté sans afficher d'erreur
 
-- Erreur SQL (`Integrity constraint violation`) due à un champ `start_date` envoyé `NULL` lors de la modification d’une annonce
-- Incohérence entre les noms des champs du formulaire et ceux attendus par la base de données
-- Temps de développement plus long que prévu pour stabiliser le CRUD
+### Ce que j'ai fait pour résoudre
+- Ajouter des contrôles sur chaque champ : longueur minimale, format email, correspondance des deux mots de passe
+- Afficher un message d'erreur clair sous chaque champ en cas de saisie incorrecte
+
+### Tâches prévues pour la prochaine séance
+- Créer le dashboard annonceur
+- Commencer le CRUD des annonce
 
 ---
 
-### Solutions
+## Jour 3 – Mercredi 11 février 2026
 
-- Correction du mapping des dates pour garantir l’envoi de valeurs valides à la base
+
+**Objectif du jour :** Créer l'espace annonceur et permettre la gestion des annonces via des modales JavaScript
+
+### Ce que j'ai fait
+- Créer la vue dashboard annonceur (`/annonceur/dashboard`) qui liste les annonces de l'utilisateur connecté
+- Ajouter la méthode `findAnnonceByUserId()` dans le modèle `Annonce` pour filtrer les annonces par `user_id`
+- Ajouter la méthode `nombreStage()` pour compter le total des annonces dans `ads`
+- Créer la méthode `verifMedia()` pour valider et uploader les PDF (max 1 Mo, extension `.pdf` uniquement), le chemin étant stocké dans `media_path`
+- Créer la méthode `updateAnnonce()` dans le modèle pour faire le `UPDATE` en base
+- Développer les méthodes `dashboard()` et `updateAnnonce()` dans `AnnonceurController`
+- Créer la vue `annonceur/detail.php` avec le statut de chaque annonce (Active si `end_date` >= aujourd'hui, Expirée sinon)
+- Définir les routes du groupe `/annonceur` : `/dashboard`, `/details/{id}`, `/create`, `/edit/{id}`, `/delete/{id}`
+- Préparer la structure des routes pour le groupe `/chercheur`
+- Développer `annonceur.js` : affichage des détails et du formulaire de modification dans des modales via `fetch()`
+- Gérer l'ouverture et la fermeture des modales avec des événements JavaScript
+- Filtrer et nettoyer les données du formulaire avant envoi au backend
+- Écrire le journal de bord
+
+### Problèmes rencontrés
+- L'upload refusait certains fichiers valides à cause d'un contrôle trop strict sur le type MIME
+- Le média existant n'apparaissait pas dans le formulaire de modification si l'annonce en avait un
+
+
+### Ce que j'ai fait pour résoudre
+- Vérifier à la fois l'extension et le type MIME dans `verifMedia()` pour éviter les faux positifs
+- Afficher le lien vers le fichier actuel dans la modale si `media_path` n'est pas vide, sinon afficher "Aucun média"
+- Ajouter un événement `submit` sur le formulaire qui ferme la modale et rafraîchit la liste après l'envoi
+
+### Tâches prévues pour la prochaine séance
+- Finaliser la création et la suppression d'annonces 
+- Corriger les erreurs restantes sur la modification
+- Commencer la page administrateur
+
 ---
+
+## Jour 4 – Mercredi 18 février 2026
+
+
+**Objectif du jour :** Finaliser le CRUD des annonces et corriger les erreurs de modification
+
+### Ce que j'ai fait
+- Finaliser la création d'annonce côté backend (route `/annonceur/create`) avec insertion dans `ads` 
+- Corriger la méthode `updateAnnonce()` pour que le `UPDATE` SQL fonctionne correctement
+- Corriger le mapping des champs : le formulaire envoyait `date_debut` et `date_fin`, mais la base attend `start_date` et `end_date`
+- Ajouter des messages de retour clairs après chaque opération (création, modification, suppression)
+- Implémenter la suppression d'annonce (route `/annonceur/delete/{id}`) avec vérification que l'annonce appartient bien à l'utilisateur connecté
+- Mettre à jour le planning effectif pour refléter le temps réellement passé sur le CRUD
+- Écrire le journal de bord
+
+### Problèmes rencontrés
+- Erreur SQL `Integrity constraint violation` : le champ `start_date` était envoyé `NULL` à cause du mauvais nom de champ dans le formulaire
+- Le temps passé à corriger le CRUD a été plus long que prévu, ce qui a décalé les tâches suivantes
+
+### Ce que j'ai fait pour résoudre
+- Renommer les champs dans le formulaire HTML pour qu'ils correspondent exactement aux colonnes de la table `ads`
+- Ajouter une vérification avant le `UPDATE` pour s'assurer qu'aucun champ obligatoire n'est `NULL`
 
 ### Bilan
+Le CRUD des annonces fonctionne complètement. Par contre, je n'ai pas pu commencer la page administrateurni la recherche d'annonces comme prévu. Ces deux tâches sont reportées au jour 5. J'ai mis à jour le planning effectif en conséquence.
 
-Le CRUD d’une annonce est désormais entièrement fonctionnel, mais sa mise en place a demandé plus de temps que prévu en raison des ajustements nécessaires et des corrections d’erreurs ce qui fait que je n'ai pu faire la page admin et implémenter la recherche d'annonce
+### Tâches prévues pour la prochaine séance
+- Créer la page administrateur 
+- Implémenter la recherche d'annonces
+- Commencer le CSS
+
+## Jour 5 – Mercredi 3 mars 2026
+
+**Objectif du jour :** Créer la page administrateur et implémenter la recherche d'annonces
+
+### Ce que j'ai fait
+- Implémenter la recherche d'annonces par compétences via une requête SQL avec `LIKE` sur la colonne `required_skills`
+- Développer la route `/search/{params}` qui retourne les résultats en JSON
+- Ajoutde  l'événement `input` sur la barre de recherche, appel `fetch()` vers la route de recherche avec le params ( la value de l'input ) , mise à jour dynamique de la liste des annonces
+- Gérer l'affichage du nombre d'offres trouvées mis à jour à chaque frappe
+- Afficher un message si aucune annonce ne correspond au mot-clé saisi
+- Reloader la page via `location.reload()` quand la barre de recherche est vidée
+- Écrire le journal de bord
+
+### Problèmes rencontrés
+- La première heure a été consacrée à un récapitulatif des notes et remarques, ( pas un problème en soit mais j'ai pas pu commencer la page administrateur ) 
+- Conflit entre les annonces générées par PHP au chargement de la page et celles générées dynamiquement en Js ( quand la searchbar était vidée, le compteur affichait un nombre incorrect car le JS prenait le dessus sur l'affichage du nombre de annnonces trouvées PHP )
+- Des doublons apparaissaient dans les résultats de recherche à cause des jointures avec `ad_keywords`
+- Le message "aucune annonce trouvée" ne s'affichait pas à cause d'un conflit entre le style inline `display: none` et la classe CSS `.active-message`
+
+### Ce que j'ai fait pour résoudre
+- Résoudre le conflit PHP, JS en mettant un `location.reload()` lorsque la searchbar est vide, ce qui laisse le PHP reprendre l'affichage des 
+- Ajouter `DISTINCT` dans la requête SQL pour éliminer les doublons
+
+### Bilan
+La fonctionnalité de recherche fonctionne mais a pris plus de temps que prévu en raison des conflits entre le rendu PHP et la génération dynamique du JS. La page administrateur n'a pas pu être commencée. Elle est reportée au jour 6.
+
+### Tâches prévues pour la prochaine séance
+- Créer la page administrateur
+- Commencer le CSS
+
+
+
+## Jour 6 – Mercredi 11 mars 2026
+
+**Objectif du jour :** Créer la page administrateur, implémenter la wishlist et le système de like, le CRUD des utilisateurs, le CRUD des keywords et commencer les tests fonctionnels et unitaires
+
+### Ce que j'ai fait
+- Créer la page administrateur avec la gestion des utilisateurs (liste, modification, suppression)
+- Développer le CRUD des utilisateurs côté admin : routes `/admin/users`, `/admin/users/edit/{id}`, `/admin/users/delete/{id}`
+- Développer le CRUD des keywords côté admin : routes `/admin/keywords`, `/admin/keywords/create`, `/admin/keywords/edit/{id}`, `/admin/keywords/delete/{id}`
+- Implémenter la wishlist : ajout et suppression d'annonces en favoris, stockage dans la table `wishlists`
+- Implémenter le système de like sur les annonces avec mise à jour dynamique via `fetch()` et en php au load
+- Adapter la requête SQL de récupération des annonces pour inclure les données de wishlist et de like selon l'utilisateur connecté
+- Commencer les tests fonctionnels et unitaires sur le rapport de test
+- Écrire le journal de bord
+
+### Problèmes rencontrés
+- Pas de problème majeur rencontré durant cette séance
+- La seule difficulté a été d'adapter la requête SQL existante pour y intégrer les données de wishlist, notamment pour savoir si une annonce est déjà en favoris pour l'utilisateur connecté
+
+### Ce que j'ai fait pour résoudre
+- Modifier la requête SQL en ajoutant une sous-requête avec `LEFT JOIN` sur la table `wishlists` pour récupérer l'état favori de chaque annonce en une seule requête
+
+### Bilan
+Les fonctionnalités principales de cette séance sont implémentées et fonctionnelles. Les tests ont été amorcés mais ne sont pas encore finalisés.
+
+### Tâches prévues pour la prochaine séance
+- Implémenter le CSS sur l'ensemble des pages
+- Continuer et finaliser les tests restants sur le rapport de test
+
 
 
