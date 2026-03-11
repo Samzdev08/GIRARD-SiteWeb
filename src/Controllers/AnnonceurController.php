@@ -11,9 +11,9 @@ class AnnonceurController
 {
     public function __invoke(Request $request, Response $response): Response
     {
-        $annonces = Annonce::findAllStage();
+        $userId = $_SESSION['user_id'] ?? 0;
+        $annonces = Annonce::findAllStage($userId);
         $nombreOffre = Annonce::nombreStage();
-
 
         $view = new PhpRenderer(__DIR__ . '/../../templates', [
             'title' => 'Accueil',
@@ -39,7 +39,8 @@ class AnnonceurController
 
     public function offres(Request $request, Response $response): Response
     {
-        $annonces = Annonce::findAllStage();
+        $userId = $_SESSION['user_id'] ?? 0;
+        $annonces = Annonce::findAllStage($userId);
 
         $view = new PhpRenderer(__DIR__ . '/../../templates', [
             'title' => 'Offres d\'emploi',
@@ -134,7 +135,7 @@ class AnnonceurController
             ]);
         }
 
-        if(!preg_match($data['title'], '/^[a-zA-Z0-9\s]+$/')) {
+        if (!preg_match('/^[a-zA-Z0-9\s]+$/', $data['title'])) {
             $userId = $_SESSION['user_id'];
             $annonces = Annonce::findAnnonceByUserId($userId);
 
@@ -186,7 +187,7 @@ class AnnonceurController
 
     public function createAnnonce(Request $request, Response $response)
     {
-       $data = filter_input_array(INPUT_POST, [
+        $data = filter_input_array(INPUT_POST, [
             'title' => FILTER_SANITIZE_SPECIAL_CHARS,
             'description' => FILTER_SANITIZE_SPECIAL_CHARS,
             'required_skills' => FILTER_SANITIZE_SPECIAL_CHARS,
@@ -200,73 +201,92 @@ class AnnonceurController
             $media = Annonce::verifMedia($_FILES['media']);
 
             if (!$media['success']) {
-               
-                    $userId = $_SESSION['user_id'];
-                    $annonces = Annonce::findAnnonceByUserId($userId);
-    
-                    $view = new PhpRenderer(__DIR__ . '/../../templates');
-                    $view->setLayout('layout.php');
-    
-                    return $view->render($response, 'annonceur/detail.php', [
-                        'title' => 'Dashboard Annonceur',
-                        'message' => $media['message'],
-                        'type' => 'error',
-                        'annonces' => $annonces
-                    ]);
+
+                $userId = $_SESSION['user_id'];
+                $annonces = Annonce::findAnnonceByUserId($userId);
+
+                $view = new PhpRenderer(__DIR__ . '/../../templates');
+                $view->setLayout('layout.php');
+
+                return $view->render($response, 'annonceur/detail.php', [
+                    'title' => 'Dashboard Annonceur',
+                    'message' => $media['message'],
+                    'type' => 'error',
+                    'annonces' => $annonces
+                ]);
             }
 
             $data['media_path'] = $media['filename'];
             $data['media_type'] = $media['type'];
         }
 
-            if (empty($data['title']) || empty($data['description']) || empty($data['required_skills']) || empty($data['date_debut']) || empty($data['date_fin'])) {
-                $userId = $_SESSION['user_id'];
-                $annonces = Annonce::findAnnonceByUserId($userId);
-    
-                $view = new PhpRenderer(__DIR__ . '/../../templates');
-                $view->setLayout('layout.php');
-    
-                return $view->render($response, 'annonceur/detail.php', [
-                    'title' => 'Dashboard Annonceur',
-                    'message' => 'Les champs ne peuvent pas etre vides.',
-                    'type' => 'error',
-                    'annonces' => $annonces
-                ]);
-            }
+        if (strlen($data['title']) > 255) {
 
-            if (strtotime($data['date_fin']) < strtotime($data['date_debut'])) {
-                $userId = $_SESSION['user_id'];
-                $annonces = Annonce::findAnnonceByUserId($userId);
-    
-                $view = new PhpRenderer(__DIR__ . '/../../templates');
-                $view->setLayout('layout.php');
-    
-                return $view->render($response, 'annonceur/detail.php', [
-                    'title' => 'Dashboard Annonceur',
-                    'message' => 'La date de fin doit être supérieure à la date de début.',
-                    'type' => 'error',
-                    'annonces' => $annonces
-                ]);
-            }
+            $userId = $_SESSION['user_id'];
+            $annonces = Annonce::findAnnonceByUserId($userId);
 
-             if(!preg_match($data['title'], '/^[a-zA-Z0-9\s]+$/')) {
-                $userId = $_SESSION['user_id'];
-                $annonces = Annonce::findAnnonceByUserId($userId);
-    
-                $view = new PhpRenderer(__DIR__ . '/../../templates');
-                $view->setLayout('layout.php');
-    
-                return $view->render($response, 'annonceur/detail.php', [
-                    'title' => 'Dashboard Annonceur',
-                    'message' => 'Le titre de l\'annonce est invalide.',
-                    'type' => 'error',
-                    'annonces' => $annonces
-                ]);
-            }
+            $view = new PhpRenderer(__DIR__ . '/../../templates');
+            $view->setLayout('layout.php');
 
-        $result = Annonce::createAnnonce($data);
+            return $view->render($response, 'annonceur/detail.php', [
+                'title' => 'Dashboard Annonceur',
+                'message' => 'Le titre de l\'annonce est trop max 255.',
+                'type' => 'error',
+                'annonces' => $annonces
+            ]);
+        }
+
+        if (empty($data['title']) || empty($data['description']) || empty($data['required_skills']) || empty($data['date_debut']) || empty($data['date_fin'])) {
+            $userId = $_SESSION['user_id'];
+            $annonces = Annonce::findAnnonceByUserId($userId);
+
+            $view = new PhpRenderer(__DIR__ . '/../../templates');
+            $view->setLayout('layout.php');
+
+            return $view->render($response, 'annonceur/detail.php', [
+                'title' => 'Dashboard Annonceur',
+                'message' => 'Les champs ne peuvent pas etre vides.',
+                'type' => 'error',
+                'annonces' => $annonces
+            ]);
+        }
+
+        if (strtotime($data['date_fin']) < strtotime($data['date_debut'])) {
+            $userId = $_SESSION['user_id'];
+            $annonces = Annonce::findAnnonceByUserId($userId);
+
+            $view = new PhpRenderer(__DIR__ . '/../../templates');
+            $view->setLayout('layout.php');
+
+            return $view->render($response, 'annonceur/detail.php', [
+                'title' => 'Dashboard Annonceur',
+                'message' => 'La date de fin doit être supérieure à la date de début.',
+                'type' => 'error',
+                'annonces' => $annonces
+            ]);
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9\s]+$/', $data['title'])) {
+            $userId = $_SESSION['user_id'];
+            $annonces = Annonce::findAnnonceByUserId($userId);
+
+            $view = new PhpRenderer(__DIR__ . '/../../templates');
+            $view->setLayout('layout.php');
+
+            return $view->render($response, 'annonceur/detail.php', [
+                'title' => 'Dashboard Annonceur',
+                'message' => 'Le titre de l\'annonce est invalide.',
+                'type' => 'error',
+                'annonces' => $annonces
+            ]);
+        }
+
 
         $userId = $_SESSION['user_id'];
+        $data['user_id'] = $userId;
+        $result = Annonce::createAnnonce($data);
+
+
         $annonces = Annonce::findAnnonceByUserId($userId);
 
         $view = new PhpRenderer(__DIR__ . '/../../templates');
@@ -287,7 +307,5 @@ class AnnonceurController
 
         $response->getBody()->write(json_encode(['data' => $result]));
         return $response->withHeader('Content-Type', 'application/json; charset=utf-8');
-
-        
     }
 }

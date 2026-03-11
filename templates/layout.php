@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<?php
-session_start();
-var_dump($_SESSION);
-?>
 
 <body>
     <header>
@@ -23,8 +19,9 @@ var_dump($_SESSION);
             <?php elseif ($_SESSION['type_compte'] === 'annonceur') : ?>
                 <a href="/annonceur/dashboard">Profil Annonceur</a>
                 <a href="/auth/logout">Déconnexion</a>
-            <?php elseif ($_SESSION['type_compte'] === 'admin') : ?>
+            <?php elseif ($_SESSION['type_compte'] === 'administrateur') : ?>
                 <a href="/admin/dashboard">Coin Admin</a>
+                <a href="/auth/logout">Déconnexion</a>
             <?php endif ?>
             <?php if (!isset($_SESSION['type_compte'])): ?>
 

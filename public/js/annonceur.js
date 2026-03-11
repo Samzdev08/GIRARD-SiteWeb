@@ -125,11 +125,22 @@ function showStageDetails(stage) {
     const modal = document.getElementById('modal');
     const body = document.getElementById('modalBody');
 
+    let mediaHtml = '';
+    if (stage.media_path && stage.media_path !== '') {
+        mediaHtml = `
+            <p>
+                <strong>Média :</strong>
+                <a href="/uploads/${stage.media_path}" target="_blank">Voir le média</a>
+            </p>
+        `;
+    }
+
     body.innerHTML = `
         <h2>${stage.title}</h2>
         <p><strong>Description :</strong> ${stage.description}</p>
         <p><strong>Compétences requises :</strong> ${stage.required_skills}</p>
         <p><strong>Date de publication :</strong> ${stage.created_at}</p>
+        ${mediaHtml}
     `;
 
     modal.style.display = 'block';
@@ -173,8 +184,8 @@ document.querySelector('.add-annonce').addEventListener('click', function (e) {
                 <input type="date" id="date_fin" name="date_fin" >
             </div>
             <div>
-                <label for="media">Média (PDF) * :</label>
-                <input type="file" id="media" name="media" accept="application/pdf" >
+                <label for="media">Média * :</label>
+                <input type="file" name="media" accept="application/pdf, image/jpeg, image/png">
             </div>
             <div style="margin-top: 15px;">
                 <button type="submit">Créer</button>
@@ -184,4 +195,14 @@ document.querySelector('.add-annonce').addEventListener('click', function (e) {
     `;
     modal.style.display = 'block';
 });
+
+
+const msg = document.querySelector('.message');
+if (msg) {
+    setTimeout(() => {
+        msg.style.transition = 'opacity 0.5s ease';
+        msg.style.opacity = '0';
+        setTimeout(() => msg.remove(), 500);
+    }, 2000);
+}
 

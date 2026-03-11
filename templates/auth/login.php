@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/style.css">
 <div class="form-container">
     <div class="emoji">😊</div>
     <div class="title">Connexion</div>
@@ -15,7 +16,7 @@
             </div>
            
         <button type="submit">Se connecter</button>
-        <span>Vous n'avez pas de compte ? <a href="/register">Inscrivez-vous</a></span>
+        <span>Vous n'avez pas de compte ? <a href="/auth/register">Inscrivez-vous</a></span>
     </form>
 </div>
 <a href="/">Retour à l'accueil</a>

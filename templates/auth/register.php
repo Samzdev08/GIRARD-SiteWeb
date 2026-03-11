@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/style.css">
 <div class="form-container">
     <div class="emoji">😊</div>
     <div class="title">Créer un compte</div>
@@ -7,7 +8,7 @@
         <div class="type-comptes">
             <label for="type-compte">Type de compte :</label>
             <div class="type-container">
-                <div class="type" data-type="chercheur" style="border: 1px solid red;">
+                <div class="type" data-type="chercheur" >
                     <div class="emoji">🔍</div>
                     <div class="label">Chercheur</div>
                     <div class="desc">Je cherche un emploi</div>
@@ -22,7 +23,7 @@
         </div>
         <div class="input-group">
             <label for="nomUtilisateur">Nom d'utilisateur :</label>
-            <input type="text" id="nomUtilisateur" name="nomUtilisateur" placeholder="Entrez votre nom d'utilisateur" >
+            <input type="text" id="nomUtilisateur" name="nomUtilisateur" placeholder="Entrez votre nom d'utilisateur" value="<?= $username ?>" >
             <small>Au moins 3 caractères</small>
         </div>
         <div class="input-group">

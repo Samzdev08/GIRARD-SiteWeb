@@ -49,3 +49,49 @@ window.onclick = function (event) {
         modal.style.display = 'none';
     }
 };
+
+const searchBar = document.querySelector('#searchInput');
+const offreContainer = document.querySelector('.offres-list');
+
+searchBar.addEventListener('input', async () => {
+    const valueSearchBar = searchBar.value;
+    if (valueSearchBar === '') {
+        location.reload();
+        return;
+    }
+    const response = await fetch(`/search/${valueSearchBar}`);
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error);
+
+    if (result.data.length < 1) {
+        const message = document.querySelector('.message-search');
+        if (message) message.classList.add('active-message');
+        offreContainer.innerHTML = '';
+        return;
+    }
+
+    const message = document.querySelector('.message-search');
+    if (message) message.classList.remove('active-message');
+    const offres = result.data;
+    offreContainer.innerHTML = '';
+
+    offres.forEach((item) => {
+        const div = document.createElement('div');
+        const competences = item.required_skills.split(',').map(s => `<span class="competence">${s}</span>`).join('');
+        div.innerHTML = `
+            <div class="offre">
+                <div class="container-like">
+                    <a href="/auth/login" class="like-button">🤍<span>${item.wishlist_count ?? 0}</span></a>
+                    <div class="title">${item.title}</div>
+                    <div class="infos">
+                        <div class="date-posted">Posté le ${item.created_at}</div>
+                    </div>
+                    <div class="description">${item.description}</div>
+                    <div class="comptences">${competences}</div>
+                    <a class="detail" href="/details/${item.id}">Voir l'offre</a>
+                </div>
+            </div>
+        `;
+        offreContainer.appendChild(div);
+    });
+});

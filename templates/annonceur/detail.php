@@ -1,4 +1,4 @@
-
+<link rel="stylesheet" href="/css/style.css">
 <div class="annonceur-detail">
     <div class="annonceur-header">
         <div class="annonceur-text">
@@ -12,30 +12,26 @@
     <?php if (!empty($message)): ?>
         <div class="message <?= $type ?>"><?= $message ?></div>
     <?php endif; ?>
-
     <div class="annonceur-list">
-
         <?php if (!empty($annonces)): ?>
             <?php foreach ($annonces as $annonce): ?>
                 <div class="annonceur-item">
                     <div class="annonceur-statut">
                         <?= (strtotime($annonce['end_date']) > time()) ? "Active" : "Expirée" ?>
                     </div>
-
                     <div class="annonceur-info">
                         <h2><?php echo $annonce['title']; ?></h2>
                         <p>Du <?php echo date('d F Y', strtotime($annonce['start_date'])); ?> au <?php echo date('d F Y', strtotime($annonce['end_date'])); ?></p>
                     </div>
                     <div class="annonceur-competences">
-
                         <?php
                         $competences = explode(',', $annonce['required_skills']);
-
                         foreach ($competences as $competence): ?>
                             <span class="competence"><?= $competence ?></span>
                         <?php endforeach; ?>
-
-
+                    </div>
+                    <div class="annonceur-wishlist">
+                        ❤️ <span><?= $annonce['wishlist_count'] ?? 0 ?></span> personne(s) ont wishlité cette annonce
                     </div>
                     <div class="annonceur-actions">
                         <a class="detail" href="/annonceur/details/<?= $annonce['id'] ?>">Voir</a>

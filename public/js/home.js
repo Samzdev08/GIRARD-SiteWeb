@@ -1,10 +1,8 @@
 document.addEventListener('click', async function (e) {
     const btn = e.target.closest('.detail');
     if (!btn) return;
-
     e.preventDefault();
     const id = btn.href.split('/').pop();
-
     try {
         const response = await fetch('/details/' + id, {
             method: 'GET',
@@ -22,16 +20,15 @@ document.addEventListener('click', async function (e) {
 function showStageDetails(stage) {
     const modal = document.getElementById('modal');
     const body = document.getElementById('modalBody');
-
     body.innerHTML = `
         <h2>${stage.title}</h2>
         <p><strong>Description :</strong> ${stage.description}</p>
         <p><strong>Compétences requises :</strong> ${stage.required_skills}</p>
         <p><strong>Date de publication :</strong> ${stage.created_at}</p>
     `;
-
     modal.style.display = 'block';
 }
+
 document.querySelector('.modal-close').addEventListener('click', function () {
     document.getElementById('modal').style.display = 'none';
 });
@@ -56,7 +53,7 @@ searchBar.addEventListener('input', async () => {
     const response = await fetch(`/search/${valueSearchBar}`);
     const result = await response.json();
     if (!response.ok) throw new Error(result.error);
-    
+
     if (result.data.length < 1) {
         const message = document.querySelector('.message-search');
         if (message) message.classList.add('active-message');
@@ -64,19 +61,20 @@ searchBar.addEventListener('input', async () => {
         offreContainer.innerHTML = '';
         return;
     }
-    
+
     const message = document.querySelector('.message-search');
     if (message) message.classList.remove('active-message');
     const offres = result.data;
     titreOffres.textContent = `${offres.length} offre(s) trouvée(s)`;
     offreContainer.innerHTML = '';
+
     offres.forEach((item) => {
         const div = document.createElement('div');
         const competences = item.required_skills.split(',').map(s => `<span class="competence">${s}</span>`).join('');
         div.innerHTML = `
             <div class="offre">
                 <div class="container-like">
-                    <div class="like-button">❤️<span>0</span></div>
+                    <a href="/auth/login" class="like-button">🤍<span>${item.wishlist_count ?? 0}</span></a>
                     <div class="title">${item.title}</div>
                     <div class="infos">
                         <div class="date-posted">Posté le ${item.created_at}</div>
@@ -90,9 +88,3 @@ searchBar.addEventListener('input', async () => {
         offreContainer.appendChild(div);
     });
 });
-
-
-const createElement = (nameElement) => {
-
-    return document.createElement(nameElement);
-}

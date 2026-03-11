@@ -32,14 +32,22 @@ class Annonce
     }
 
 
-    public static function findAllStage()
+    public static function findAllStage($userId = 0)
     {
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT * FROM " . self::$table);
+        $stmt = $db->prepare("
+        SELECT 
+            a.*,
+            COUNT(DISTINCT w.user_id) AS wishlist_count,
+            MAX(CASE WHEN w.user_id = :userId THEN 1 ELSE 0 END) AS in_wishlist
+        FROM " . self::$table . " a
+        LEFT JOIN wishlist w ON w.ad_id = a.id
+        GROUP BY a.id
+        ORDER BY a.created_at DESC
+    ");
+        $stmt->bindParam(':userId', $userId);
         $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $results;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public static function findById($id)
@@ -59,14 +67,20 @@ class Annonce
     public static function findAnnonceByUserId($id)
     {
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT * FROM " . self::$table . " WHERE user_id = :id");
+        $stmt = $db->prepare("
+        SELECT 
+            a.*,
+            COUNT(DISTINCT w.user_id) AS wishlist_count
+        FROM " . self::$table . " a
+        LEFT JOIN wishlist w ON w.ad_id = a.id
+        WHERE a.user_id = :id
+        GROUP BY a.id
+    ");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (!$result) {
-            return null;
-        }
+        if (!$result) return null;
         return $result;
     }
 
@@ -82,33 +96,44 @@ class Annonce
     }
 
     public static function verifMedia($file)
-    {
+{
+    if ($file['size'] == 0 || $file['size'] > 1000000) 
+        return ['success' => false, 'message' => 'Taille de fichier trop grande (max 1 Mo)'];
 
-        if ($file['size'] == 0 || $file['size'] > 1000000) return ['success' => false, 'message' => 'Taille de fichier trop grand max '];
+    $uploadDir = __DIR__ . '/../../public/uploads/';
+    if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
 
+    $finalName   = time() . '_' . $file['name'];
+    $destination = $uploadDir . $finalName;
+    $extension   = strtolower(pathinfo($finalName, PATHINFO_EXTENSION));
 
+    
+    $allowed = ['pdf', 'jpg', 'jpeg', 'png'];
 
-        $uploadDir = __DIR__ . '/../../public/uploads/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
-
-        $finalName = time() . '_' . $file['name'];
-        $destination = $uploadDir . $finalName;
-
-        $allowed = ['pdf'];
-
-        $extension = strtolower(pathinfo($finalName, PATHINFO_EXTENSION));
-
-        if (!in_array($extension, $allowed)) {
-
-            return ['success' => false, 'message' => 'Mauvaise extension de fichier.'];
-        }
-
-        if (!move_uploaded_file($file['tmp_name'], $destination)) {
-            return ['success' => false, 'message' => 'Échec du déplacement du fichier.'];
-        }
-
-        return ['success' => true, 'filename' => $finalName, 'type' => $extension];
+    if (!in_array($extension, $allowed)) {
+        return ['success' => false, 'message' => 'Extension non autorisée. Formats acceptés : PDF, JPG, PNG'];
     }
+
+    
+    $allowedMimes = [
+        'pdf'  => 'application/pdf',
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png'  => 'image/png',
+    ];
+    $realMime = mime_content_type($file['tmp_name']);
+    if ($realMime !== $allowedMimes[$extension]) {
+        return ['success' => false, 'message' => 'Le contenu du fichier ne correspond pas à son extension.'];
+    }
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return ['success' => false, 'message' => 'Échec du déplacement du fichier.'];
+    }
+
+    $type = in_array($extension, ['jpg', 'jpeg', 'png']) ? 'image' : 'pdf';
+
+    return ['success' => true, 'filename' => $finalName, 'type' => $type];
+}
 
     public static function updateAnnonce($data)
     {
