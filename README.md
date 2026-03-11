@@ -162,3 +162,33 @@ La fonctionnalité de recherche fonctionne mais a pris plus de temps que prévu 
 
 
 
+## Jour 6 – Mercredi 11 mars 2026
+
+**Objectif du jour :** Créer la page administrateur, implémenter la wishlist et le système de like, le CRUD des utilisateurs, le CRUD des keywords et commencer les tests fonctionnels et unitaires
+
+### Ce que j'ai fait
+- Créer la page administrateur avec la gestion des utilisateurs (liste, modification, suppression)
+- Développer le CRUD des utilisateurs côté admin : routes `/admin/users`, `/admin/users/edit/{id}`, `/admin/users/delete/{id}`
+- Développer le CRUD des keywords côté admin : routes `/admin/keywords`, `/admin/keywords/create`, `/admin/keywords/edit/{id}`, `/admin/keywords/delete/{id}`
+- Implémenter la wishlist : ajout et suppression d'annonces en favoris, stockage dans la table `wishlists`
+- Implémenter le système de like sur les annonces avec mise à jour dynamique via `fetch()` et en php au load
+- Adapter la requête SQL de récupération des annonces pour inclure les données de wishlist et de like selon l'utilisateur connecté
+- Commencer les tests fonctionnels et unitaires sur le rapport de test
+- Écrire le journal de bord
+
+### Problèmes rencontrés
+- Pas de problème majeur rencontré durant cette séance
+- La seule difficulté a été d'adapter la requête SQL existante pour y intégrer les données de wishlist, notamment pour savoir si une annonce est déjà en favoris pour l'utilisateur connecté
+
+### Ce que j'ai fait pour résoudre
+- Modifier la requête SQL en ajoutant une sous-requête avec `LEFT JOIN` sur la table `wishlists` pour récupérer l'état favori de chaque annonce en une seule requête
+
+### Bilan
+Les fonctionnalités principales de cette séance sont implémentées et fonctionnelles. Les tests ont été amorcés mais ne sont pas encore finalisés.
+
+### Tâches prévues pour la prochaine séance
+- Implémenter le CSS sur l'ensemble des pages
+- Continuer et finaliser les tests restants sur le rapport de test
+
+
+
