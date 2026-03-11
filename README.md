@@ -1,5 +1,7 @@
 # Journal de bord 
-lien du rapport de test : https://docs.google.com/spreadsheets/d/1xJxyJq9bZRFFxvoRA4Ii3Y5YiuEe80j6oIEHq0L34M0/edit?gid=36809425#gid=36809425
+### lien du rapport de test : https://docs.google.com/spreadsheets/d/1xJxyJq9bZRFFxvoRA4Ii3Y5YiuEe80j6oIEHq0L34M0/edit?gid=36809425#gid=36809425
+
+### lien du planing : https://docs.google.com/spreadsheets/d/1pgZ-EXmahRv91h59EzFW84b1TBxVgkHT/edit?gid=2145585959#gid=2145585959
 ---
 
 ## Jour 1 – Mercredi 28 janvier 2026
@@ -157,5 +159,6 @@ La fonctionnalité de recherche fonctionne mais a pris plus de temps que prévu 
 ### Tâches prévues pour la prochaine séance
 - Créer la page administrateur
 - Commencer le CSS
+
 
 
