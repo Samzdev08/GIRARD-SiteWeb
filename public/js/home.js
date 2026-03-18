@@ -1,90 +1,124 @@
+// ══════════════════════════════════════════════════
+//  Modal – clic sur "Voir l'offre"
+// ══════════════════════════════════════════════════
 document.addEventListener('click', async function (e) {
     const btn = e.target.closest('.detail');
     if (!btn) return;
     e.preventDefault();
+
     const id = btn.href.split('/').pop();
+
     try {
         const response = await fetch('/details/' + id, {
-            method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        if (!response.ok) throw new Error(`Erreur HTTP: ${response.error}`);
+        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
+
         const result = await response.json();
         if (result) showStageDetails(result);
     } catch (error) {
-        console.error('Erreur:', error.message);
+        console.error('Erreur :', error.message);
         alert('Erreur lors du chargement des détails');
     }
 });
 
 function showStageDetails(stage) {
-    const modal = document.getElementById('modal');
-    const body = document.getElementById('modalBody');
-    body.innerHTML = `
-        <h2>${stage.title}</h2>
-        <p><strong>Description :</strong> ${stage.description}</p>
-        <p><strong>Compétences requises :</strong> ${stage.required_skills}</p>
-        <p><strong>Date de publication :</strong> ${stage.created_at}</p>
+    const competences = stage.required_skills
+        .split(',')
+        .map(s => `<span class="badge bg-primary bg-opacity-10 text-primary rounded-pill me-1">${s.trim()}</span>`)
+        .join('');
+
+    document.getElementById('modalBody').innerHTML = `
+        <h5 class="fw-bold mb-3">${stage.title}</h5>
+        <p class="text-muted mb-1"><i class="bi bi-calendar3 me-2"></i><strong>Publié le :</strong> ${stage.created_at}</p>
+        <hr>
+        <p class="mb-3"><strong>Description :</strong><br>${stage.description}</p>
+        <p class="mb-2"><strong>Compétences requises :</strong></p>
+        <div class="mb-2">${competences}</div>
     `;
-    modal.style.display = 'block';
+
+    const bsModal = new bootstrap.Modal(document.getElementById('modal'));
+    bsModal.show();
 }
 
-document.querySelector('.modal-close').addEventListener('click', function () {
-    document.getElementById('modal').style.display = 'none';
-});
-
-window.onclick = function (event) {
-    const modal = document.getElementById('modal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-};
-
-const searchBar = document.querySelector('.search-bar');
-const offreContainer = document.querySelector('.offres-list');
-const titreOffres = document.querySelector('.offres-container h1');
+// ══════════════════════════════════════════════════
+//  Recherche live (input)
+// ══════════════════════════════════════════════════
+const searchBar    = document.querySelector('.search-bar');
+const offreList    = document.querySelector('.offres-list');
+const titreOffres  = document.querySelector('.offres-titre');
+const msgSearch    = document.querySelector('.message-search');
 
 searchBar.addEventListener('input', async () => {
-    const valueSearchBar = searchBar.value;
-    if (valueSearchBar === '') {
+    const query = searchBar.value.trim();
+
+    if (query === '') {
         location.reload();
         return;
     }
-    const response = await fetch(`/search/${valueSearchBar}`);
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error);
 
-    if (result.data.length < 1) {
-        const message = document.querySelector('.message-search');
-        if (message) message.classList.add('active-message');
-        titreOffres.textContent = `0 offre(s) trouvée(s)`;
-        offreContainer.innerHTML = '';
-        return;
+    try {
+        const response = await fetch(`/search/${encodeURIComponent(query)}`);
+        const result   = await response.json();
+        if (!response.ok) throw new Error(result.error);
+
+        const offres = result.data;
+
+        if (offres.length < 1) {
+            msgSearch?.classList.remove('d-none');
+            titreOffres.textContent = '0 offre(s) trouvée(s)';
+            offreList.innerHTML     = '';
+            return;
+        }
+
+        msgSearch?.classList.add('d-none');
+        titreOffres.textContent = `${offres.length} offre(s) trouvée(s)`;
+        offreList.innerHTML     = offres.map(item => buildOffreCard(item)).join('');
+
+    } catch (error) {
+        console.error('Erreur recherche :', error.message);
     }
+});
 
-    const message = document.querySelector('.message-search');
-    if (message) message.classList.remove('active-message');
-    const offres = result.data;
-    titreOffres.textContent = `${offres.length} offre(s) trouvée(s)`;
-    offreContainer.innerHTML = '';
+// ──────────────────────────────────────────────────
+//  Génération d'une carte offre (Bootstrap)
+// ──────────────────────────────────────────────────
+function buildOffreCard(item) {
+    const competences = item.required_skills
+        .split(',')
+        .map(s => `<span class="badge bg-primary bg-opacity-10 text-primary rounded-pill me-1 mb-1 competence">${s.trim()}</span>`)
+        .join('');
 
-    offres.forEach((item) => {
-        const div = document.createElement('div');
-        const competences = item.required_skills.split(',').map(s => `<span class="competence">${s}</span>`).join('');
-        div.innerHTML = `
-            <div class="offre">
-                <div class="container-like">
-                    <a href="/auth/login" class="like-button">🤍<span>${item.wishlist_count ?? 0}</span></a>
-                    <div class="title">${item.title}</div>
-                    <div class="infos">
-                        <div class="date-posted">Posté le ${item.created_at}</div>
+    return `
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card offre-card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body d-flex flex-column p-4">
+
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-semibold mb-0 title">${item.title}</h5>
+                        <a href="/auth/login"
+                           class="btn btn-sm btn-outline-danger rounded-pill like-button ms-2 flex-shrink-0">
+                            <i class="bi bi-heart"></i>
+                            <span class="ms-1">${item.wishlist_count ?? 0}</span>
+                        </a>
                     </div>
-                    <div class="description">${item.description}</div>
-                    <div class="comptences">${competences}</div>
-                    <a class="detail" href="/details/${item.id}">Voir l'offre</a>
+
+                    <small class="text-muted mb-3">
+                        <i class="bi bi-calendar3 me-1"></i>Posté le ${item.created_at}
+                    </small>
+
+                    <p class="card-text text-muted small flex-grow-1 description">
+                        ${item.description}
+                    </p>
+
+                    <div class="mb-3 comptences">${competences}</div>
+
+                    <a class="btn btn-outline-primary rounded-pill detail mt-auto"
+                       href="/details/${item.id}">
+                        Voir l'offre <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
                 </div>
             </div>
-        `;
-        offreContainer.appendChild(div);
-    });
-});
+        </div>
+    `;
+}

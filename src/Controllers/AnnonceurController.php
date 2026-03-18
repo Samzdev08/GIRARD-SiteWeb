@@ -58,6 +58,11 @@ class AnnonceurController
                 ->withHeader('Location', '/login')
                 ->withStatus(302);
         }
+        else if ($_SESSION['type_compte'] !== 'annonceur') {
+            return $response
+                ->withHeader('Location', '/')
+                ->withStatus(302);
+        }
 
         $userId = $_SESSION['user_id'];
         $annonces = Annonce::findAnnonceByUserId($userId);
@@ -135,7 +140,8 @@ class AnnonceurController
             ]);
         }
 
-        if (!preg_match('/^[a-zA-Z0-9\s]+$/', $data['title'])) {
+       if (!preg_match('/^[\p{L}0-9\s\-\(\)\/\+\,\.\']+$/u', $data['title'])) {
+    
             $userId = $_SESSION['user_id'];
             $annonces = Annonce::findAnnonceByUserId($userId);
 

@@ -15,6 +15,9 @@ class AdminController
         if (!isset($_SESSION['user_id']) || $_SESSION['type_compte'] !== 'administrateur') {
             return $response->withHeader('Location', '/auth/login')->withStatus(302);
         }
+        else if($_SESSION['type_compte'] !== 'administrateur') {
+            return $response->withHeader('Location', '/')->withStatus(302);
+        }
         return true;
     }
 

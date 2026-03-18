@@ -16,6 +16,9 @@ class ChercheurController
         if (!$userId) {
             return $response->withHeader('Location', '/auth/login')->withStatus(302);
         }
+        else if($_SESSION['type_compte'] !== 'chercheur') {
+            return $response->withHeader('Location', '/')->withStatus(302);
+        }
 
         $annonces = Wishlist::getByUser($userId);
 

@@ -42,6 +42,7 @@ class Annonce
             MAX(CASE WHEN w.user_id = :userId THEN 1 ELSE 0 END) AS in_wishlist
         FROM " . self::$table . " a
         LEFT JOIN wishlist w ON w.ad_id = a.id
+        WHERE a.end_date > NOW()
         GROUP BY a.id
         ORDER BY a.created_at DESC
     ");
@@ -214,10 +215,11 @@ class Annonce
 
         $sql = "SELECT *, COUNT(*) OVER() as total_count
         FROM ads
-        WHERE required_skills LIKE :keyword";
+        WHERE required_skills LIKE :keyword OR title LIKE :keyword1 OR description LIKE :keyword2
+        ORDER BY created_at DESC";
 
         $stmt = $db->prepare($sql);
-        $stmt->execute(['keyword' => '%' . $params . '%']);
+        $stmt->execute(['keyword' => '%' . $params . '%', 'keyword1' => '%' . $params . '%', 'keyword2' => '%' . $params . '%']);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

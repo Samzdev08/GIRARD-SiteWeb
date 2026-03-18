@@ -1,208 +1,229 @@
+// ══════════════════════════════════════════════════
+//  Helpers modal Bootstrap
+// ══════════════════════════════════════════════════
+let bsModal = null;
 
-document.querySelectorAll('.detail').forEach(btn => {
-    btn.addEventListener('click', async function (e) {
-        e.preventDefault();
-        const href = this.href;
-        const id = href.split('/').pop();
-        console.log('ID de l\'offre:', id);
-        try {
-            const response = await fetch('/details/' + id, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP: ${response.error}`);
-            }
-            const result = await response.json();
-            if (result) {
-                showStageDetails(result);
-            }
-        } catch (error) {
-            console.error('Erreur:', error.message);
-            alert('Erreur lors du chargement des détails');
-        }
-    });
+function openModal() {
+    if (!bsModal) bsModal = new bootstrap.Modal(document.getElementById('modal'));
+    bsModal.show();
+}
+
+function closeModal() {
+    bsModal?.hide();
+}
+
+// ══════════════════════════════════════════════════
+//  Voir les détails  (.detail)
+// ══════════════════════════════════════════════════
+document.addEventListener('click', async function (e) {
+    const btn = e.target.closest('.detail');
+    if (!btn) return;
+    e.preventDefault();
+
+    const id = btn.href.split('/').pop();
+    try {
+        const response = await fetch('/details/' + id, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
+        const result = await response.json();
+        if (result) showStageDetails(result);
+    } catch (error) {
+        console.error('Erreur :', error.message);
+        alert('Erreur lors du chargement des détails');
+    }
 });
 
-document.querySelectorAll('.edit').forEach(btn => {
-    btn.addEventListener('click', async function (e) {
-        e.preventDefault();
-        const href = this.href;
-        const id = href.split('/').pop();
-        console.log('ID de l\'offre:', id);
-        try {
-            const response = await fetch('/details/' + id, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP: ${response.error}`);
-            }
-            const result = await response.json();
-            if (result) {
-                showEditModal(result);
-            }
-        } catch (error) {
-            console.error('Erreur:', error.message);
-            alert('Erreur lors du chargement des détails');
-        }
-    });
+function showStageDetails(stage) {
+    const competences = stage.required_skills
+        .split(',')
+        .map(s => `<span class="badge bg-primary bg-opacity-10 text-primary rounded-pill me-1">${s.trim()}</span>`)
+        .join('');
+
+    const mediaHtml = stage.media_path
+        ? `<p class="mb-0"><strong>Média :</strong>
+            <a href="/uploads/${stage.media_path}" target="_blank" class="ms-1">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Voir le fichier
+            </a></p>`
+        : '';
+
+    document.getElementById('modalLabel').textContent = 'Détail de l\'offre';
+    document.getElementById('modalBody').innerHTML = `
+        <h5 class="fw-bold mb-3">${stage.title}</h5>
+        <p class="text-muted mb-1">
+            <i class="bi bi-calendar3 me-2"></i><strong>Publié le :</strong> ${stage.created_at}
+        </p>
+        <hr>
+        <p class="mb-3"><strong>Description :</strong><br>${stage.description}</p>
+        <p class="mb-2"><strong>Compétences requises :</strong></p>
+        <div class="mb-3">${competences}</div>
+        ${mediaHtml}
+        <div class="modal-footer border-0 px-0 pb-0">
+            <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Fermer</button>
+        </div>
+    `;
+    openModal();
+}
+
+// ══════════════════════════════════════════════════
+//  Modifier  (.edit)
+// ══════════════════════════════════════════════════
+document.addEventListener('click', async function (e) {
+    const btn = e.target.closest('.edit');
+    if (!btn) return;
+    e.preventDefault();
+
+    const id = btn.href.split('/').pop();
+    try {
+        const response = await fetch('/details/' + id, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
+        const result = await response.json();
+        if (result) showEditModal(result);
+    } catch (error) {
+        console.error('Erreur :', error.message);
+        alert('Erreur lors du chargement des détails');
+    }
 });
 
 function showEditModal(stage) {
-    const modal = document.getElementById('modal');
-    const body = document.getElementById('modalBody');
+    const mediaHtml = (stage.media_path && stage.media_path !== '')
+        ? `<a href="/uploads/${stage.media_path}" target="_blank" class="small">
+               <i class="bi bi-file-earmark-pdf me-1"></i>Voir le média actuel
+           </a>`
+        : `<span class="text-muted small">Aucun média pour cette annonce</span>`;
 
-    let mediaHtml = '';
-
-    if (stage.media_path === null || stage.media_path === '') {
-        mediaHtml = `<p>Aucun média pour cette annonce</p>`;
-    } else {
-        mediaHtml = `
-            <a href="/uploads/${stage.media_path}" target="_blank">
-                Voir le média actuel
-            </a>
-        `;
-    }
-
-    body.innerHTML = `
-        <h2>Modifier le stage</h2>
-
-        <form id="editStageForm" action="/annonceur/edit/${stage.id}" method="POST" enctype="multipart/form-data">
+    document.getElementById('modalLabel').textContent = 'Modifier l\'annonce';
+    document.getElementById('modalBody').innerHTML = `
+        <form id="editStageForm" action="/annonceur/edit/${stage.id}"
+              method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="${stage.id}">
 
-            <div>
-                <label for="title">Titre :</label>
-                <input type="text" id="title" name="title" value="${stage.title}" >
+            <div class="mb-3">
+                <label for="title" class="form-label">Titre</label>
+                <input type="text" id="title" name="title"
+                       class="form-control rounded-3" value="${stage.title}" required>
             </div>
 
-            <div>
-                <label for="description">Description :</label>
-                <textarea id="description" name="description" >${stage.description}</textarea>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description"
+                          class="form-control rounded-3" rows="4" required>${stage.description}</textarea>
             </div>
 
-            <div>
-                <label for="required_skills">Compétences requises (séparées par des virgules) :</label>
-                <input type="text" id="required_skills" name="required_skills" value="${stage.required_skills}">
+            <div class="mb-3">
+                <label for="required_skills" class="form-label">
+                    Compétences requises
+                    <small class="text-muted">(séparées par des virgules)</small>
+                </label>
+                <input type="text" id="required_skills" name="required_skills"
+                       class="form-control rounded-3" value="${stage.required_skills}">
             </div>
 
-            <div>
-                <label for="date_debut">Date de début :</label>
-                <input type="date" id="date_debut" name="date_debut" value="${stage.start_date}" >
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label for="date_debut" class="form-label">Date de début</label>
+                    <input type="date" id="date_debut" name="date_debut"
+                           class="form-control rounded-3" value="${stage.start_date}" required>
+                </div>
+                <div class="col-6">
+                    <label for="date_fin" class="form-label">Date de fin</label>
+                    <input type="date" id="date_fin" name="date_fin"
+                           class="form-control rounded-3" value="${stage.end_date}" required>
+                </div>
             </div>
 
-            <div>
-                    <label for="date_fin">Date de fin :</label>
-                    <input type="date" id="date_fin" name="date_fin" value="${stage.end_date}" §>
-            </div
-
-            <div>
-                <label for="media">Média :</label>
-                <input type="file" id="media" name="media" accept="application/pdf"
->
-                ${mediaHtml}
-
+            <div class="mb-4">
+                <label for="media" class="form-label">Média (PDF)</label>
+                <input type="file" id="media" name="media"
+                       class="form-control rounded-3" accept="application/pdf">
+                <div class="mt-1">${mediaHtml}</div>
             </div>
 
-            <div style="margin-top: 15px;">
-                <button type="submit">Enregistrer</button>
-                <button type="button" onclick="closeModal()">Annuler</button>
+            <div class="d-flex gap-2 justify-content-end">
+                <button type="button" class="btn btn-secondary rounded-pill"
+                        onclick="closeModal()">Annuler</button>
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-floppy me-1"></i>Enregistrer
+                </button>
             </div>
         </form>
     `;
-
-    modal.style.display = 'block';
-
-    
+    openModal();
 }
 
-
-function showStageDetails(stage) {
-    const modal = document.getElementById('modal');
-    const body = document.getElementById('modalBody');
-
-    let mediaHtml = '';
-    if (stage.media_path && stage.media_path !== '') {
-        mediaHtml = `
-            <p>
-                <strong>Média :</strong>
-                <a href="/uploads/${stage.media_path}" target="_blank">Voir le média</a>
-            </p>
-        `;
-    }
-
-    body.innerHTML = `
-        <h2>${stage.title}</h2>
-        <p><strong>Description :</strong> ${stage.description}</p>
-        <p><strong>Compétences requises :</strong> ${stage.required_skills}</p>
-        <p><strong>Date de publication :</strong> ${stage.created_at}</p>
-        ${mediaHtml}
-    `;
-
-    modal.style.display = 'block';
-}
-document.querySelector('.modal-close').addEventListener('click', function () {
-    document.getElementById('modal').style.display = 'none';
-});
-
-window.onclick = function (event) {
-    const modal = document.getElementById('modal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-};
-
-document.querySelector('.add-annonce').addEventListener('click', function (e) { 
+// ══════════════════════════════════════════════════
+//  Nouvelle annonce  (.add-annonce)
+// ══════════════════════════════════════════════════
+document.querySelector('.add-annonce')?.addEventListener('click', function (e) {
     e.preventDefault();
-    const modal = document.getElementById('modal');
-    const body = document.getElementById('modalBody');
 
-    body.innerHTML = `
-        <form id="createStageForm" action="/annonceur/create" method="POST" enctype="multipart/form-data">
-            <div>
-                <label for="title">Titre :</label>
-                <input type="text" id="title" name="title" >
+    document.getElementById('modalLabel').textContent = 'Nouvelle annonce';
+    document.getElementById('modalBody').innerHTML = `
+        <form id="createStageForm" action="/annonceur/create"
+              method="POST" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Titre</label>
+                <input type="text" id="title" name="title"
+                       class="form-control rounded-3" required>
             </div>
-            <div>
-                <label for="description">Description :</label>
-                <textarea id="description" name="description" ></textarea>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description"
+                          class="form-control rounded-3" rows="4" required></textarea>
             </div>
-            <div>
-                <label for="required_skills">Compétences requises (séparées par des virgules) :</label>
-                <input type="text" id="required_skills" name="required_skills" >
+
+            <div class="mb-3">
+                <label for="required_skills" class="form-label">
+                    Compétences requises
+                    <small class="text-muted">(séparées par des virgules)</small>
+                </label>
+                <input type="text" id="required_skills" name="required_skills"
+                       class="form-control rounded-3">
             </div>
-            <div>
-                <label for="date_debut">Date de début :</label>
-                <input type="date" id="date_debut" name="date_debut" >
+
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label for="date_debut" class="form-label">Date de début</label>
+                    <input type="date" id="date_debut" name="date_debut"
+                           class="form-control rounded-3" required>
+                </div>
+                <div class="col-6">
+                    <label for="date_fin" class="form-label">Date de fin</label>
+                    <input type="date" id="date_fin" name="date_fin"
+                           class="form-control rounded-3" required>
+                </div>
             </div>
-            <div>
-                <label for="date_fin">Date de fin :</label>
-                <input type="date" id="date_fin" name="date_fin" >
+
+            <div class="mb-4">
+                <label for="media" class="form-label">Média <span class="text-danger">*</span></label>
+                <input type="file" id="media" name="media"
+                       class="form-control rounded-3"
+                       accept="application/pdf,image/jpeg,image/png" required>
             </div>
-            <div>
-                <label for="media">Média * :</label>
-                <input type="file" name="media" accept="application/pdf, image/jpeg, image/png">
-            </div>
-            <div style="margin-top: 15px;">
-                <button type="submit">Créer</button>
-                <button type="button" onclick="closeModal()">Annuler</button>
+
+            <div class="d-flex gap-2 justify-content-end">
+                <button type="button" class="btn btn-secondary rounded-pill"
+                        onclick="closeModal()">Annuler</button>
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-plus-lg me-1"></i>Créer
+                </button>
             </div>
         </form>
     `;
-    modal.style.display = 'block';
+    openModal();
 });
 
-
+// ══════════════════════════════════════════════════
+//  Auto-dismiss flash message
+// ══════════════════════════════════════════════════
 const msg = document.querySelector('.message');
 if (msg) {
     setTimeout(() => {
-        msg.style.transition = 'opacity 0.5s ease';
-        msg.style.opacity = '0';
-        setTimeout(() => msg.remove(), 500);
-    }, 2000);
+        const bsAlert = bootstrap.Alert.getOrCreateInstance(msg);
+        bsAlert?.close();
+    }, 3000);
 }
-
