@@ -191,4 +191,21 @@ Les fonctionnalités principales de cette séance sont implémentées et fonctio
 - Continuer et finaliser les tests restants sur le rapport de test
 
 
+## Jour 7 – Mercredi 18 mars 2026
 
+**Objectif du jour :** Intégrer Bootstrap sur toutes les vues et finaliser les tests
+
+### Ce que j'ai fait
+- Intégrer Bootstrap sur toutes les vues (layout, home, offres, login, register, dashboards)
+- Corriger la regex de validation des titres pour autoriser les accents, tirets et slashes
+- Finaliser les tests unitaires (TU-12 à TU-16) et fonctionnels (TF-08 à TF-28)
+- Écrire le journal de bord
+
+### Problèmes rencontrés
+- La regex `^[a-zA-Z0-9\s]+$` rejetait des titres valides avec accents ou tirets
+
+### Ce que j'ai fait pour résoudre
+- Remplacer la regex par `[\p{L}0-9\s\-\(\)\/\+\,\.\']+`
+
+### Bilan
+Toutes les vues sont en Bootstrap et tous les tests du jour sont réussis.
